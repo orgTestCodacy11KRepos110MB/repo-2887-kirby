@@ -193,6 +193,11 @@ class Revision
 		return $this;
 	}
 
+	public function strings(): array
+	{
+		return $this->fields->export()->toStrings();
+	}
+
 	public function timestamp(): ?int
 	{
 		if ($date = $this->info()['time']) {

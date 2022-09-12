@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import picker from "@/mixins/form/picker.js";
+import picker from "@/mixins/forms/picker.js";
 
 /**
  * @example <k-files-field v-model="files" name="files" label="Files" />

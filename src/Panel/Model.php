@@ -212,7 +212,7 @@ abstract class Model
 			'lock' => [
 				'status' => null,
 			],
-			'permissions' => $this->model->permissions()->toArray()
+			'permissions' => $this->model->permissions()->toArray(),
 		];
 
 		return $props;

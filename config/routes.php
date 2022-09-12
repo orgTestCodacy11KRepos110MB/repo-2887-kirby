@@ -130,6 +130,25 @@ return function ($kirby) {
 			}
 		];
 
+		$after[] = [
+			'pattern' => '(:all)/revision',
+			'method'  => 'ALL',
+			'env'     => 'site',
+			'action'  => function (string $path) use ($kirby) {
+				if ($page = $kirby->page($path)) {
+
+					$content  = $page->content()->toArray();
+					$revision = $page->revision()->pull()->strings();
+
+					$clone = $page->clone([
+						'content' => array_merge($content, $revision)
+					]);
+
+					return $clone;
+				}
+			}
+		];
+
 		// Single-language subpages
 		$after[] = [
 			'pattern' => '(:all)',
@@ -139,6 +158,7 @@ return function ($kirby) {
 				return $kirby->resolve($path);
 			}
 		];
+
 	}
 
 	return [

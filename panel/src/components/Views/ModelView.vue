@@ -68,8 +68,8 @@ export default {
 		this.$events.$off("keydown.right", this.toNext);
 	},
 	methods: {
-		autosave() {
-			console.log("saved");
+		async autosave() {
+			this.$api.patch(this.id, this.values, true);
 		},
 		onInput(values) {
 			this.values = values;
