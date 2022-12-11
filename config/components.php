@@ -327,7 +327,7 @@ return [
 
 		F::copy($src, $path, true);
 		$darkroom->process($path, $options);
-		F::copy($path, $root, true);
+		F::move($path, $root, true);
 
 		return $root;
 	},
