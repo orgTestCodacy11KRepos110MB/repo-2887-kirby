@@ -39,6 +39,16 @@ export function isEmpty(value) {
 }
 
 /**
+ * Checks if is an object
+ *
+ * @param {mixed} object
+ * @returns {boolean}
+ */
+export function isObject(object) {
+	return typeof object === "object" && object?.constructor === Object;
+}
+
+/**
  * Merges two objects
  *
  * @param {Object} target
@@ -74,6 +84,7 @@ export function toLowerKeys(obj) {
 export default {
 	clone,
 	isEmpty,
+	isObject,
 	merge,
 	toLowerKeys
 };

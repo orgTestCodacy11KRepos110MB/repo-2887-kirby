@@ -1,3 +1,4 @@
+import ColorInput from "@/components/Forms/Input/ColorInput.vue";
 import CheckboxInput from "@/components/Forms/Input/CheckboxInput.vue";
 import CheckboxesInput from "@/components/Forms/Input/CheckboxesInput.vue";
 import DateInput from "@/components/Forms/Input/DateInput.vue";
@@ -21,6 +22,7 @@ import UrlInput from "@/components/Forms/Input/UrlInput.vue";
 
 export default {
 	install(app) {
+		app.component("k-color-input", ColorInput);
 		app.component("k-checkbox-input", CheckboxInput);
 		app.component("k-checkboxes-input", CheckboxesInput);
 		app.component("k-date-input", DateInput);

@@ -1,3 +1,5 @@
+import ColorPicker from "./Color/ColorPicker.vue";
+import ColorPreview from "./Color/ColorPreview.vue";
 import Draggable from "./Draggable.vue";
 import ErrorBoundary from "./ErrorBoundary.vue";
 import Fatal from "./Fatal.vue";
@@ -16,6 +18,8 @@ import UserInfo from "./UserInfo.vue";
 
 export default {
 	install(app) {
+		app.component("k-color-picker", ColorPicker);
+		app.component("k-color-preview", ColorPreview);
 		app.component("k-draggable", Draggable);
 		app.component("k-error-boundary", ErrorBoundary);
 		app.component("k-fatal", Fatal);

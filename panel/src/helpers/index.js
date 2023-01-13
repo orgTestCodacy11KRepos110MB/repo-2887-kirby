@@ -1,5 +1,6 @@
 import clipboard from "./clipboard.js";
 import color from "./color.js";
+import colors from "./colors.js";
 import debounce from "./debounce.js";
 import embed from "./embed.js";
 import field from "./field.js";
@@ -38,9 +39,11 @@ export default {
 		};
 
 		Vue.prototype.$helper = {
+			clamp: (value, min, max) => Math.min(Math.max(value, min), max),
 			clipboard,
 			clone: object.clone,
 			color,
+			colors,
 			embed,
 			isComponent,
 			isUploadEvent,
