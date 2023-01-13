@@ -14,15 +14,15 @@ export function hex2rgba(hex) {
 
 		// expand short-notation to full six-digit
 		if (hex.length === 3) {
-			hex = hex.split("");
-			hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+			hex = hex.split("").reduce((x, y) => x + y + y, "");
 		}
 
-		const x = parseInt(hex, 16);
+		const num = parseInt(hex, 16);
+
 		return {
-			r: x >> 16,
-			g: (x >> 8) & 0xff,
-			b: x & 0xff,
+			r: num >> 16,
+			g: (num >> 8) & 0xff,
+			b: num & 0xff,
 			a: 1
 		};
 	}
@@ -34,17 +34,16 @@ export function hex2rgba(hex) {
 
 		// expand short-notation to full eight-digit
 		if (hex.length === 4) {
-			hex = hex.split("");
-			hex =
-				hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2] + hex[3] + hex[3];
+			hex = hex.split("").reduce((x, y) => x + y + y, "");
 		}
-		const x = parseInt(hex, 16);
+
+		const num = parseInt(hex, 16);
 
 		return {
-			r: (x >> 24) & 0xff,
-			g: (x >> 16) & 0xff,
-			b: (x >> 8) & 0xff,
-			a: Math.round(((x & 0xff) / 0xff) * 100) / 100
+			r: (num >> 24) & 0xff,
+			g: (num >> 16) & 0xff,
+			b: (num >> 8) & 0xff,
+			a: Math.round(((num & 0xff) / 0xff) * 100) / 100
 		};
 	}
 
@@ -55,16 +54,16 @@ export function rgba2hex({ r, g, b, a = 1 }) {
 	r = Math.round(r);
 	g = Math.round(g);
 	b = Math.round(b);
-	const x = (r << 16) | (g << 8) | b;
-	let hex = "000000" + x.toString(16);
-	hex = hex.slice(hex.length - 6);
 
-	if (a === 1) {
-		return `#${hex}`;
+	const num = (r << 16) | (g << 8) | b;
+	const hex = ("000000" + num.toString(16)).slice(hex.length - 6);
+
+	if (a < 1) {
+		a = "0" + Math.round(a * 255).toString(16);
+		return `#${hex}${a.slice(a.length - 2)}`;
 	}
 
-	a = "0" + Math.round(a * 255).toString(16);
-	return `#${hex}${a.slice(a.length - 2)}`;
+	return "#" + hex;
 }
 
 export function rgba2hsva({ r, g, b, a }) {
@@ -78,115 +77,106 @@ export function rgba2hsva({ r, g, b, a }) {
 		s,
 		v = max;
 
-	const d = max - min;
-	s = max === 0 ? 0 : d / max;
+	const num = max - min;
+	s = max === 0 ? 0 : num / max;
 
 	if (max === min) {
-		h = 0;
-	} else {
-		switch (max) {
-			case r:
-				h = (g - b) / d + (g < b ? 6 : 0);
-				break;
-			case g:
-				h = (b - r) / d + 2;
-				break;
-			case b:
-				h = (r - g) / d + 4;
-				break;
-		}
-		h /= 6;
+		return { h: 0, s, v, a };
 	}
 
-	return {
-		h: h * 360,
-		s,
-		v,
-		a
-	};
+	switch (max) {
+		case r:
+			h = (g - b) / num + (g < b ? 6 : 0);
+			break;
+		case g:
+			h = (b - r) / num + 2;
+			break;
+		case b:
+			h = (r - g) / num + 4;
+			break;
+	}
+
+	return { h: h * 60, s, v, a };
 }
 
 export function hsva2rgba({ h, s, v, a }) {
-	let r, g, b;
-
 	v *= 255;
 
 	if (s === 0) {
-		r = g = b = v;
-	} else {
-		if (h === 360) {
-			h = 0;
-		}
-		if (h > 360) {
-			h -= 360;
-		}
-		if (h < 0) {
-			h += 360;
-		}
-		h /= 60;
-
-		const i = Math.floor(h);
-		const f = h - i;
-		const p = v * (1 - s);
-		const q = v * (1 - s * f);
-		const t = v * (1 - s * (1 - f));
-
-		switch (i) {
-			case 0:
-				[r, g, b] = [v, t, p];
-				break;
-			case 1:
-				[r, g, b] = [q, v, p];
-				break;
-			case 2:
-				[r, g, b] = [p, v, t];
-				break;
-			case 3:
-				[r, g, b] = [p, q, v];
-				break;
-			case 4:
-				[r, g, b] = [t, p, v];
-				break;
-			case 5:
-				[r, g, b] = [v, p, q];
-				break;
-		}
+		return { r: v, g: v, b: v, a };
 	}
 
-	return { r, g, b, a };
+	if (h === 360) {
+		h = 0;
+	} else if (h > 360) {
+		h -= 360;
+	} else if (h < 0) {
+		h += 360;
+	}
+
+	h /= 60;
+
+	const i = Math.floor(h);
+	const f = h - i;
+	const p = v * (1 - s);
+	const q = v * (1 - s * f);
+	const t = v * (1 - s * (1 - f));
+
+	switch (i) {
+		case 0:
+			return { r: v, g: t, b: p, a };
+		case 1:
+			return { r: q, g: v, b: p, a };
+		case 2:
+			return { r: p, g: v, b: t, a };
+		case 3:
+			return { r: p, g: q, b: t, a };
+		case 4:
+			return { r: t, g: p, b: v, a };
+		case 5:
+			return { r: v, g: p, b: q, a };
+	}
 }
 
 export function hsla2rgba({ h, s, l, a }) {
-	let r, g, b;
 	if (s === 0) {
-		r = g = b = l * 255;
-	} else {
-		const c = [0, 0, 0];
-		const x2 = l < 0.5 ? l * (1 + s) : l + s - l * s;
-		const x3 = [0, 0, 0];
-		const x1 = 2 * l - x2;
-		const h_ = h / 360;
-		x3[0] = h_ + 1 / 3;
-		x3[1] = h_;
-		x3[2] = h_ - 1 / 3;
-
-		for (let i = 0; i < 3; i++) {
-			if (x3[i] < 0) x3[i] += 1;
-			if (x3[i] > 1) x3[i] -= 1;
-			if (6 * x3[i] < 1) c[i] = x1 + (x2 - x1) * 6 * x3[i];
-			else if (2 * x3[i] < 1) c[i] = x2;
-			else if (3 * x3[i] < 2) c[i] = x1 + (x2 - x1) * (2 / 3 - x3[i]) * 6;
-			else c[i] = x1;
-		}
-
-		[r, g, b] = [
-			Math.round(c[0] * 255),
-			Math.round(c[1] * 255),
-			Math.round(c[2] * 255)
-		];
+		l *= 255;
+		return { r: l, g: l, b: l, a };
 	}
 
-	return { r, g, b, a };
+	const num = [0, 0, 0];
+	const x2 = l < 0.5 ? l * (1 + s) : l + s - l * s;
+	const x3 = [0, 0, 0];
+	const x1 = 2 * l - x2;
+	const hh = h / 360;
+
+	x3[0] = hh + 1 / 3;
+	x3[1] = hh;
+	x3[2] = hh - 1 / 3;
+
+	for (let i = 0; i < 3; i++) {
+		if (x3[i] < 0) {
+			x3[i] += 1;
+		} else if (x3[i] > 1) {
+			x3[i] -= 1;
+		}
+		if (6 * x3[i] < 1) {
+			num[i] = x1 + (x2 - x1) * 6 * x3[i];
+		} else if (2 * x3[i] < 1) {
+			num[i] = x2;
+		} else if (3 * x3[i] < 2) {
+			num[i] = x1 + (x2 - x1) * (2 / 3 - x3[i]) * 6;
+		} else {
+			num[i] = x1;
+		}
+	}
+
+	return {
+		r: Math.round(num[0] * 255),
+		g: Math.round(num[1] * 255),
+		b: Math.round(num[2] * 255),
+		a
+	};
 }
 
 export function rgba2hsla({ r, g, b, a }) {
@@ -197,12 +187,12 @@ export function rgba2hsla({ r, g, b, a }) {
 	const min = Math.min(r, g, b);
 	const max = Math.max(r, g, b);
 
+	let h, s;
 	const l = (max + min) / 2;
-	let s, h;
 
 	if (max === min) {
-		s = 0;
 		h = Number.NaN;
+		s = 0;
 	} else {
 		s = l < 0.5 ? (max - min) / (max + min) : (max - min) / (2 - max - min);
 	}
@@ -216,6 +206,7 @@ export function rgba2hsla({ r, g, b, a }) {
 	}
 
 	h *= 60;
+
 	if (h < 0) {
 		h += 360;
 	}
@@ -302,10 +293,6 @@ export function parse(string) {
 
 	if (!string) {
 		return false;
-	}
-
-	if (isHex(colorNames[string])) {
-		return colorNames[string];
 	}
 
 	// HEX
@@ -474,157 +461,6 @@ export function toString(color, format) {
 
 	throw new Error(`not a color: ${JSON.stringify(color)}`);
 }
-
-const colorNames = {
-	aliceblue: "#f0f8ff",
-	antiquewhite: "#faebd7",
-	aqua: "#00ffff",
-	aquamarine: "#7fffd4",
-	azure: "#f0ffff",
-	beige: "#f5f5dc",
-	bisque: "#ffe4c4",
-	black: "#000000",
-	blanchedalmond: "#ffebcd",
-	blue: "#0000ff",
-	blueviolet: "#8a2be2",
-	brown: "#a52a2a",
-	burlywood: "#deb887",
-	cadetblue: "#5f9ea0",
-	chartreuse: "#7fff00",
-	chocolate: "#d2691e",
-	coral: "#ff7f50",
-	cornflowerblue: "#6495ed",
-	cornsilk: "#fff8dc",
-	crimson: "#dc143c",
-	cyan: "#00ffff",
-	darkblue: "#00008b",
-	darkcyan: "#008b8b",
-	darkgoldenrod: "#b8860b",
-	darkgray: "#a9a9a9",
-	darkgreen: "#006400",
-	darkgrey: "#a9a9a9",
-	darkkhaki: "#bdb76b",
-	darkmagenta: "#8b008b",
-	darkolivegreen: "#556b2f",
-	darkorange: "#ff8c00",
-	darkorchid: "#9932cc",
-	darkred: "#8b0000",
-	darksalmon: "#e9967a",
-	darkseagreen: "#8fbc8f",
-	darkslateblue: "#483d8b",
-	darkslategray: "#2f4f4f",
-	darkslategrey: "#2f4f4f",
-	darkturquoise: "#00ced1",
-	darkviolet: "#9400d3",
-	deeppink: "#ff1493",
-	deepskyblue: "#00bfff",
-	dimgray: "#696969",
-	dimgrey: "#696969",
-	dodgerblue: "#1e90ff",
-	firebrick: "#b22222",
-	floralwhite: "#fffaf0",
-	forestgreen: "#228b22",
-	fuchsia: "#ff00ff",
-	gainsboro: "#dcdcdc",
-	ghostwhite: "#f8f8ff",
-	goldenrod: "#daa520",
-	gold: "#ffd700",
-	gray: "#808080",
-	green: "#008000",
-	greenyellow: "#adff2f",
-	grey: "#808080",
-	honeydew: "#f0fff0",
-	hotpink: "#ff69b4",
-	indianred: "#cd5c5c",
-	indigo: "#4b0082",
-	ivory: "#fffff0",
-	khaki: "#f0e68c",
-	lavenderblush: "#fff0f5",
-	lavender: "#e6e6fa",
-	lawngreen: "#7cfc00",
-	lemonchiffon: "#fffacd",
-	lightblue: "#add8e6",
-	lightcoral: "#f08080",
-	lightcyan: "#e0ffff",
-	lightgoldenrodyellow: "#fafad2",
-	lightgray: "#d3d3d3",
-	lightgreen: "#90ee90",
-	lightgrey: "#d3d3d3",
-	lightpink: "#ffb6c1",
-	lightsalmon: "#ffa07a",
-	lightseagreen: "#20b2aa",
-	lightskyblue: "#87cefa",
-	lightslategray: "#778899",
-	lightslategrey: "#778899",
-	lightsteelblue: "#b0c4de",
-	lightyellow: "#ffffe0",
-	lime: "#00ff00",
-	limegreen: "#32cd32",
-	linen: "#faf0e6",
-	magenta: "#ff00ff",
-	maroon: "#800000",
-	mediumaquamarine: "#66cdaa",
-	mediumblue: "#0000cd",
-	mediumorchid: "#ba55d3",
-	mediumpurple: "#9370db",
-	mediumseagreen: "#3cb371",
-	mediumslateblue: "#7b68ee",
-	mediumspringgreen: "#00fa9a",
-	mediumturquoise: "#48d1cc",
-	mediumvioletred: "#c71585",
-	midnightblue: "#191970",
-	mintcream: "#f5fffa",
-	mistyrose: "#ffe4e1",
-	moccasin: "#ffe4b5",
-	navajowhite: "#ffdead",
-	navy: "#000080",
-	oldlace: "#fdf5e6",
-	olive: "#808000",
-	olivedrab: "#6b8e23",
-	orange: "#ffa500",
-	orangered: "#ff4500",
-	orchid: "#da70d6",
-	palegoldenrod: "#eee8aa",
-	palegreen: "#98fb98",
-	paleturquoise: "#afeeee",
-	palevioletred: "#db7093",
-	papayawhip: "#ffefd5",
-	peachpuff: "#ffdab9",
-	peru: "#cd853f",
-	pink: "#ffc0cb",
-	plum: "#dda0dd",
-	powderblue: "#b0e0e6",
-	purple: "#800080",
-	rebeccapurple: "#663399",
-	red: "#ff0000",
-	rosybrown: "#bc8f8f",
-	royalblue: "#4169e1",
-	saddlebrown: "#8b4513",
-	salmon: "#fa8072",
-	sandybrown: "#f4a460",
-	seagreen: "#2e8b57",
-	seashell: "#fff5ee",
-	sienna: "#a0522d",
-	silver: "#c0c0c0",
-	skyblue: "#87ceeb",
-	slateblue: "#6a5acd",
-	slategray: "#708090",
-	slategrey: "#708090",
-	snow: "#fffafa",
-	springgreen: "#00ff7f",
-	steelblue: "#4682b4",
-	tan: "#d2b48c",
-	teal: "#008080",
-	thistle: "#d8bfd8",
-	tomato: "#ff6347",
-	turquoise: "#40e0d0",
-	violet: "#ee82ee",
-	wheat: "#f5deb3",
-	white: "#ffffff",
-	whitesmoke: "#f5f5f5",
-	yellow: "#ffff00",
-	yellowgreen: "#9acd32"
-};
 
 export default {
 	convert,
