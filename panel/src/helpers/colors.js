@@ -300,6 +300,10 @@ const RE_HSLA = /hsla?\((\d+),\s*([\d.]+)%,\s*([\d.]+)%,?\s*(\d*(?:\.\d+)?)\)?/;
 export function parse(string) {
 	let values;
 
+	if (!string) {
+		return false;
+	}
+
 	if (isHex(colorNames[string])) {
 		return colorNames[string];
 	}
