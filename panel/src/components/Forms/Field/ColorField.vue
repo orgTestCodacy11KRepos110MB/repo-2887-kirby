@@ -8,14 +8,22 @@
 				:current="color.value === value"
 				:tooltip="color.text ?? color.value"
 				role="switch"
-				@click="onInput(color.value)"
+				@click="onPredefinedColor(color.value)"
 			>
 				<k-color-preview :color="color.value" />
 			</k-button>
 		</div>
 
 		<!-- Input with picker -->
-		<k-input v-else v-bind="$props" theme="field" type="color" @input="onInput">
+		<k-input
+			v-else
+			ref="input"
+			v-bind="$props"
+			theme="field"
+			type="color"
+			@input="onInput"
+			@paste="onPaste"
+		>
 			<!-- Preview -->
 			<template #before>
 				<k-color-preview
@@ -40,7 +48,7 @@
 								v-for="color in colors"
 								:key="color.value"
 								:tooltip="color.text ?? color.value"
-								@click="onInput(color.value)"
+								@click="onPredefinedColor(color.value)"
 							>
 								<k-color-preview :color="color.value" />
 							</k-button>
@@ -84,12 +92,23 @@ export default {
 		}
 	},
 	methods: {
+		convert(value) {
+			const color = this.$helper.colors.parseAs(value, this.format);
+			this.$emit("input", color ? this.$helper.colors.toString(color) : value);
+		},
 		onInput(value) {
 			this.$emit("input", value);
+		},
+		onPaste(event) {
+			const value = this.$helper.clipboard.read(event);
+			this.convert(value);
 		},
 		onPicker(hsva) {
 			const value = this.$helper.colors.toString(hsva, this.format);
 			this.$emit("input", value);
+		},
+		onPredefinedColor(value) {
+			this.convert(value);
 		}
 	}
 };

@@ -90,11 +90,6 @@ export default {
 		},
 		onInvalid() {
 			this.$emit("invalid", this.$v.$invalid, this.$v);
-		},
-		onPaste(event) {
-			const value = this.$helper.clipboard.read(event);
-			const color = this.$helper.colors.parseAs(value, this.format);
-			this.$emit("input", color ? this.$helper.colors.toString(color) : value);
 		}
 	},
 	validations() {
