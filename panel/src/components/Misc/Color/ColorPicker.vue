@@ -100,8 +100,8 @@ export default {
 	cursor: grab;
 }
 
-.k-color-control,
-.k-color-picker input[type="range"] {
+.k-color-control {
 	border-radius: var(--rounded-md);
+	overflow: hidden;
 }
 </style>

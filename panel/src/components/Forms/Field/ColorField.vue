@@ -6,7 +6,7 @@
 				v-for="color in colors"
 				:key="color.value"
 				:current="color.value === value"
-				:tooltip="color.text"
+				:tooltip="color.text ?? color.value"
 				role="switch"
 				@click="onInput(color.value)"
 			>
@@ -39,7 +39,7 @@
 							<k-button
 								v-for="color in colors"
 								:key="color.value"
-								:tooltip="color.text"
+								:tooltip="color.text ?? color.value"
 								@click="onInput(color.value)"
 							>
 								<k-color-preview :color="color.value" />
@@ -133,7 +133,7 @@ export default {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.5rem;
-	justify-content: center;
+	justify-content: flex-start;
 }
 
 .k-color-field-picker-defaults .k-color-preview {

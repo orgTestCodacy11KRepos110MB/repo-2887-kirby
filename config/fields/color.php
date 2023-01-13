@@ -24,10 +24,13 @@ return [
 			$colors = [];
 
 			foreach ($this->colors as $key => $value) {
-				$colors[] = [
-					'value' => $value,
-					'text'  => is_string($key) ? $key : $value
-				];
+				$color = ['value' => $value];
+
+				if (is_string($key) === true) {
+					$color['text'] = $key;
+				}
+
+				$colors[] = $color;
 			}
 
 			return $colors;

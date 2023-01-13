@@ -1,5 +1,5 @@
 <template>
-	<div class="k-color-alpha">
+	<div class="k-color-control k-color-alpha">
 		<input
 			type="range"
 			min="0"
@@ -26,9 +26,7 @@ export default {
 
 <style>
 .k-color-alpha {
-	height: 1rem;
 	background: var(--color-white) var(--bg-pattern);
-	border-radius: var(--rounded-md);
 }
 
 .k-color-alpha input {

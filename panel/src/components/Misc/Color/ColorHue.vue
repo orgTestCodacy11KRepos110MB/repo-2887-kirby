@@ -1,5 +1,5 @@
 <template>
-	<div class="k-color-hue">
+	<div class="k-color-control k-color-hue">
 		<input
 			type="range"
 			:value="value ?? 0"

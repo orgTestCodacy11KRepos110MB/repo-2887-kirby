@@ -1,6 +1,8 @@
 <template>
-	<div v-if="label && color" class="k-text-input k-color-input">
-		<span @click="removeLabel">{{ color.text }}</span>
+	<div v-if="label && color?.text" class="k-text-input k-color-input">
+		<span>
+			{{ color.text }}
+		</span>
 	</div>
 	<input
 		v-else
@@ -17,7 +19,7 @@
 		type="text"
 		class="k-text-input k-color-input"
 		@blur="label = true"
-		@focus="onFocus"
+		@focus="$emit('focus')"
 		@input="onInput($event.target.value)"
 		@paste.prevent="onPaste"
 	/>
@@ -80,11 +82,8 @@ export default {
 		 * @public
 		 */
 		focus() {
-			this.$refs.input?.focus();
-		},
-		onFocus() {
 			this.label = false;
-			this.$emit("focus");
+			this.$nextTick(() => this.$refs.input.focus());
 		},
 		onInput(value) {
 			this.$emit("input", value);
@@ -96,10 +95,6 @@ export default {
 			const value = this.$helper.clipboard.read(event);
 			const color = this.$helper.colors.parseAs(value, this.format);
 			this.$emit("input", color ? this.$helper.colors.toString(color) : value);
-		},
-		removeLabel() {
-			this.label = false;
-			this.$nextTick(this.focus);
 		}
 	},
 	validations() {
@@ -122,5 +117,6 @@ export default {
 	background-color: var(--color-gray-200);
 	user-select: none;
 	padding: 0.2rem 0.5rem;
+	cursor: pointer;
 }
 </style>
