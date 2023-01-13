@@ -1,5 +1,13 @@
 <template>
-	<div class="k-color-box k-color-control" @click="onClick">
+	<div
+		class="k-color-box k-color-control"
+		tabindex="0"
+		@click="onClick"
+		@keydown.down.stop.prevent="onArrowDown"
+		@keydown.up.stop.prevent="onArrowUp"
+		@keydown.left.stop.prevent="onArrowLeft"
+		@keydown.right.stop.prevent="onArrowRight"
+	>
 		<div
 			v-if="value"
 			class="k-color-box-handle"
@@ -49,6 +57,22 @@ export default {
 		},
 		measure() {
 			this.bounds = this.$el.getBoundingClientRect();
+		},
+		onArrowUp() {
+			const v = this.$helper.clamp(this.value.v + 0.01, 0, 1);
+			this.$emit("input", { ...this.value, v });
+		},
+		onArrowDown() {
+			const v = this.$helper.clamp(this.value.v - 0.01, 0, 1);
+			this.$emit("input", { ...this.value, v });
+		},
+		onArrowLeft() {
+			const s = this.$helper.clamp(this.value.s - 0.01, 0, 1);
+			this.$emit("input", { ...this.value, s });
+		},
+		onArrowRight() {
+			const s = this.$helper.clamp(this.value.s + 0.01, 0, 1);
+			this.$emit("input", { ...this.value, s });
 		},
 		onClick(event) {
 			this.measure();

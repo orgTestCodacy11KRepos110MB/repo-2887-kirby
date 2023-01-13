@@ -2,10 +2,10 @@
 	<div class="k-color-hue">
 		<input
 			type="range"
+			:value="value ?? 0"
 			min="0"
 			max="360"
 			step="0.1"
-			:value="value ?? 0"
 			@input="onInput"
 		/>
 	</div>
