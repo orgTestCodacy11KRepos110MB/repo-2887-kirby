@@ -73,9 +73,9 @@ export default {
 <style>
 .k-color-picker {
 	display: flex;
-	min-width: 12rem;
+	width: 100%;
 	flex-direction: column;
-	gap: 0.5rem;
+	gap: 0.75rem;
 }
 
 .k-color-picker input[type="range"] {

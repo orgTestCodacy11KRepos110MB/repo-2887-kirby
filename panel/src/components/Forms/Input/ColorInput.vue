@@ -1,10 +1,13 @@
 <template>
+	<div v-if="label && color" class="k-text-input k-color-input">
+		<span @click="removeLabel">{{ color.text }}</span>
+	</div>
 	<input
+		v-else
 		:id="id"
 		ref="input"
 		v-direction
 		:autofocus="autofocus"
-		:class="`k-text-input k-color-input`"
 		:disabled="disabled"
 		:placeholder="placeholder"
 		:required="required"
@@ -12,7 +15,9 @@
 		autocomplete="off"
 		spellcheck="false"
 		type="text"
-		@focus="$emit('focus')"
+		class="k-text-input k-color-input"
+		@blur="label = true"
+		@focus="onFocus"
 		@input="onInput($event.target.value)"
 		@paste.prevent="onPaste"
 	/>
@@ -25,6 +30,9 @@ import { required as validateRequired } from "vuelidate/lib/validators";
 export const props = {
 	mixins: [autofocus, disabled, id, required],
 	props: {
+		colors: {
+			type: Array
+		},
 		/**
 		 * @values "hex", "rgb", "rgba", "hsl", "hsla"
 		 */
@@ -48,6 +56,16 @@ export const props = {
 export default {
 	mixins: [props],
 	inheritAttrs: false,
+	data() {
+		return {
+			label: true
+		};
+	},
+	computed: {
+		color() {
+			return this.colors.find((color) => color.value === this.value);
+		}
+	},
 	watch: {
 		value() {
 			this.onInvalid();
@@ -62,7 +80,11 @@ export default {
 		 * @public
 		 */
 		focus() {
-			this.$refs.input.focus();
+			this.$refs.input?.focus();
+		},
+		onFocus() {
+			this.label = false;
+			this.$emit("focus");
 		},
 		onInput(value) {
 			this.$emit("input", value);
@@ -74,6 +96,10 @@ export default {
 			const value = this.$helper.clipboard.read(event);
 			const color = this.$helper.colors.parseAs(value, this.format);
 			this.$emit("input", color ? this.$helper.colors.toString(color) : value);
+		},
+		removeLabel() {
+			this.label = false;
+			this.$nextTick(this.focus);
 		}
 	},
 	validations() {
@@ -87,3 +113,14 @@ export default {
 	}
 };
 </script>
+
+<style>
+.k-color-input > span {
+	font-size: var(--text-sm);
+	line-height: 1;
+	border-radius: var(--rounded);
+	background-color: var(--color-gray-200);
+	user-select: none;
+	padding: 0.2rem 0.5rem;
+}
+</style>

@@ -92,7 +92,7 @@ export default {
 <style>
 .k-color-box {
 	position: relative;
-	height: 8rem;
+	padding-bottom: calc(100% * 2 / 3);
 	background: linear-gradient(rgba(0, 0, 0, 0) 0%, rgb(0, 0, 0) 100%),
 		linear-gradient(to right, rgb(255, 255, 255) 0%, var(--hue) 100%);
 	cursor: pointer;

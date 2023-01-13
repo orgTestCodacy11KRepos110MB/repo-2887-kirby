@@ -68,9 +68,6 @@ export default {
 			type: Boolean,
 			default: true
 		},
-		colors: {
-			type: Array
-		},
 		/**
 		 * @values "hex", "rgb", "rgba", "hsl", "hsla", "colors"
 		 */
@@ -127,7 +124,10 @@ export default {
 	padding: 0.75rem;
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
+	gap: 0.75rem;
+}
+.k-color-field .k-color-picker {
+	width: 10rem;
 }
 .k-color-field-picker-defaults {
 	display: flex;
