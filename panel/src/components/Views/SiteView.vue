@@ -28,10 +28,6 @@
 				</template>
 			</k-header>
 
-			<color />
-			<br />
-			<br />
-
 			<k-sections
 				:blueprint="blueprint"
 				:empty="$t('site.blueprint')"
@@ -51,9 +47,6 @@
 import ModelView from "./ModelView.vue";
 
 export default {
-	components: {
-		color: () => import("../Misc/Color/ColorPicker.vue")
-	},
 	extends: ModelView,
 	computed: {
 		protectedFields() {
