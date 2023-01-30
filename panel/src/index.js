@@ -47,4 +47,7 @@ Vue.use(Plugins);
 // to increase specificity
 import "./styles/utilities.css";
 
+// Polyfill
+import "container-query-polyfill";
+
 app.$mount("#app");
